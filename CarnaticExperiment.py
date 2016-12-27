@@ -57,24 +57,6 @@ def getFrequencies(swaraList,baseFreq):
         freqList.append(int(dict[swara]*baseFreq))
     return freqList
         
-    
-#Return all the swaras for DheeraShakarabharanam 
-def getDheeraShankarabharanamSwaras():
-    theSwaras = []
-    theSwaras.append("s")
-    theSwaras.append("r2")
-    theSwaras.append("g2")
-    theSwaras.append("m1")
-    theSwaras.append("p")
-    theSwaras.append("d2")
-    theSwaras.append("n2")
-    theSwaras.append("S")
-    return theSwaras
-
-#Return all the frequencies for DheeraShakarabharanam, given the frequency of aadhaara shadjamam
-def getDheeraShankarabharanamFrequencies(baseFrequency):
-    return getFrequencies(getDheeraShankarabharanamSwaras(), baseFrequency)
-
 def getMadhyama(melaNumber):
     if (melaNumber>36):
         return "m2"
@@ -111,11 +93,11 @@ def getRiGa(melaNumber):
         return ["r3","g3"]
     
 
-#Return all the swaras for a given Melakartha (number according to Katapayadi)
+# Return all the swaras for a given Melakartha (number according to Katapayadi)
+# Ref: https://en.wikipedia.org/wiki/Melakarta    
 def getMelaSwaras(melaNumber):
-    #To do given melakarta number get frequencies
-    '''if(melaNumber<1 or melaNumber>72):
-        raise Error()'''
+    if melaNumber not in range(1,73):
+        raise ValueError("Melakartha number must be an integer greater than 0 and less than 73")
     
     MelaSwaraList=[]
     RiGa = getRiGa(melaNumber)
@@ -132,22 +114,27 @@ def getMelaSwaras(melaNumber):
     MelaSwaraList.append("S") 
     return MelaSwaraList
 
+#Given frequencies in aarohanam, play both aarohanam and avarohanam
 def playScale(ragaFrequencies, duration):
     for x in ragaFrequencies:
-        print x
+        #print x
         winsound.Beep(x, duration)
     for x in reversed(ragaFrequencies):
-        print x
+        #print x
         winsound.Beep(x, duration)
 
-def playPhrase(ragaFrequencies, duration):
+#Given a list of frequencies representing a musical phrase, play them once in the given sequence
+def playPhrase(ragaFrequencies, duration, alsoPrint=0):
+    if (alsoPrint==1):
+        print ragaFrequencies
     for x in ragaFrequencies:
-        print x
+        if (alsoPrint==2):
+            print x
         winsound.Beep(x, duration)
     
-
+#Perform insertion sort of given list of frequencies, and sonify the list at end of each iteration
 def insertionSort(alist):
-    playPhrase(alist,700)
+    playPhrase(alist,duration,1)
     for index in range(1,len(alist)):
         currentvalue = alist[index]
         position = index
@@ -155,23 +142,44 @@ def insertionSort(alist):
             alist[position]=alist[position-1]
             position = position-1
         alist[position]=currentvalue
-        playPhrase(alist,700)
-        playPhrase(phrase2Frequencies,700)
+        playPhrase(alist,duration, 1)
+        winsound.Beep(base*4, duration*2)
+        #playPhrase(phrase2Frequencies,duration)
 
+def insertionSort2(alist):
+    playPhrase(alist,duration,1)
+    for index in range(1,len(alist)):
+        currentvalue = alist[index]
+        position = index
+        winsound.Beep(currentvalue, duration/2)
+        print index, currentvalue
+        while position>0 and alist[position-1]>currentvalue:
+            alist[position]=alist[position-1]
+            position = position-1
+            winsound.Beep(alist[position], duration/2)
+            print position, alist[position]
+        alist[position]=currentvalue
+        playPhrase(alist,duration, 1)
+        winsound.Beep(base*4, duration*2)
+        #playPhrase(phrase2Frequencies,duration)    
+    
 
-def selectionsort(aList):
-    playPhrase(aList,700)
+#Perform selection sort of given list of frequencies, and sonify the list at end of each iteration
+def selectionSort(aList):
+    playPhrase(aList,duration,1)
     for i in range( len( aList ) ):
         least = i
         for k in range( i + 1 , len( aList ) ):
             if aList[k] < aList[least]:
                 least = k
         swap( aList, least, i )
-        playPhrase(aList,700)
-        playPhrase(phrase2Frequencies,700)
+        playPhrase(aList,duration, 1)
+        winsound.Beep(base*4, duration*2)
+        #playPhrase(phrase2Frequencies,duration)
 
-def bubblesort(a):
-    playPhrase(a,700)
+#Perform bubble sort of given list of frequencies, and sonify the list at end of each iteration
+def bubbleSort(a):
+    playPhrase(a,duration,1)
     update=True
     n=len(a)
     while(update==True and n>1):
@@ -180,50 +188,110 @@ def bubblesort(a):
             if a[i]>a[i+1]:
                 a[i],a[i+1]=a[i+1],a[i]
                 update = True
-        playPhrase(a,700)
-        playPhrase(phrase2Frequencies,700)
+        playPhrase(a,duration, 1)
+        winsound.Beep(base*4, duration*2)
+        #playPhrase(phrase2Frequencies,duration)
 
         n-=1
-        
     return a
 
- 
- 
+#swap the two elements specified in the list
 def swap( A, x, y ):
     tmp = A[x]
     A[x] = A[y]
     A[y] = tmp
+
+
+'''
+Following functions are sample code which you can invoke in the main
+'''
+  
+#Return all the swaras for DheeraShakarabharanam (Melakartha 29)
+def getDheeraShankarabharanamSwaras():
+    theSwaras = []
+    theSwaras.append("s")
+    theSwaras.append("r2")
+    theSwaras.append("g2")
+    theSwaras.append("m1")
+    theSwaras.append("p")
+    theSwaras.append("d2")
+    theSwaras.append("n2")
+    theSwaras.append("S")
+    return theSwaras
+
+#Return all the frequencies for DheeraShakarabharanam, given the frequency of aadhaara shadjamam
+def getDheeraShankarabharanamFrequencies(baseFrequency):
+    return getFrequencies(getDheeraShankarabharanamSwaras(), baseFrequency)
+
+#Play the scale for DheeraShankarabharanam
+def playShankarabharanamScale():
+    raga = getDheeraShankarabharanamFrequencies(base)
+    playScale(raga, 1000)
+
+#Print the swaras for Melakartha 56 (Shanmukhapriya)
+def printShanmukhapriyaSwaras():
+    raga = getMelaSwaras(56)
+    print raga
+
+#Get melakartha number from user and play the scale
+def playMelakartha():
+    mela= input("enter mela number(1-72) >> ")
+    melaFrequencies = getFrequencies(getMelaSwaras(mela), base)
+    playScale(melaFrequencies, 1000)
+
+#Sonify a randomly chosen sort algorithm running on a sequence of random frequencies from a randomly chosen melakartha
+def sonifySort():
+    mela=random.randint(1,72)
+    print ("This is melakarta number ",mela)
+    melaSwaras=getMelaSwaras(mela)
+    print melaSwaras
+    melaFrequencies=getFrequencies(melaSwaras, base)
+    playScale(melaFrequencies, duration)
+    random.shuffle(melaSwaras)
+    print("This the shuffled swaras from the melakartha >> ")
+    print melaSwaras
+    phraseFrequencies=getFrequencies(melaSwaras,base)
+    print("These are the frequencies >> ")
+    print phraseFrequencies
     
+    sortAlgorithm = random.randint(1,3)
+    
+    if (sortAlgorithm == 1):
+        print "Sonifying Insertion Sort"
+        insertionSort(phraseFrequencies)
+    elif (sortAlgorithm == 2):
+        print "Sonifying Selection Sort"
+        selectionSort(phraseFrequencies)
+    elif (sortAlgorithm == 3):
+        print "Sonifying Bubble Sort"
+        bubbleSort(phraseFrequencies)
+    else:
+        print("No such sort algorithm = ", sortAlgorithm)
+
+#test_1
+def test_1():
+    phrase=["S","p","g2","m2","d1","n2","s","r1"]
+    phrase2=["m2","r2","g2","m2","p","n2","p","d2","n2","S"]
+    phraseFrequencies=getFrequencies(phrase,400)
+    phrase2Frequencies=getFrequencies(phrase2,400)
+    insertionSort2(phraseFrequencies)
+    #selectionSort(phraseFrequencies)
+    #bubbleSort(phraseFrequencies)
+    
+duration = 1000
 base = 400
 init_equi()
-#raga = getDheeraShankarabharanamFrequencies(base)
-#playScale(raga, 1000)
-#print getMelaSwaras(56)
-'''mela= input("enter mela number(1-72) >> ")
-melaFrequencies = getFrequencies(getMelaSwaras(mela), base)
-playScale(melaFrequencies, 1000)
-'''
-'''
-mela=random.randint(1,72)
-phrase2=["m2","r2","g2","m2","p","n2","p","d2","n2","S"]
-print ("this is melakarta number ",mela)
-melaSwaras=getMelaSwaras(mela)
-print melaSwaras
-melaFrequencies=getFrequencies(melaSwaras, base)
-playScale(melaFrequencies, 1000)
-random.shuffle(melaSwaras)
-print melaSwaras
-phraseFrequencies=getFrequencies(melaSwaras,400)
-print("this is the shuffled phrase",phraseFrequencies)
-insertionSort(phraseFrequencies)
-'''
-phrase=["S","p","g2","m2","d1","n2","s","r1"]
-phrase2=["m2","r2","g2","m2","p","n2","p","d2","n2","S"]
-phraseFrequencies=getFrequencies(phrase,400)
-phrase2Frequencies=getFrequencies(phrase2,400)
-insertionSort(phraseFrequencies)
-#selectionsort(phraseFrequencies)
-#bubblesort(phraseFrequencies)
+
+#print(getDheeraShankarabharanamSwaras())
+#print(getDheeraShankarabharanamFrequencies(base))
+#playMelakartha()
+#playShankarabharanamScale()
+#printShanmukhapriyaSwaras()
+test_1()
+
+#sonifySort()
+
+
 
 
 
